@@ -8,22 +8,24 @@ using UnityEngine.UI;
 [RequireComponent(typeof(BoxCollider))]
 public class PricePanel : MonoBehaviour
 {
-  [SerializeField] private TMP_Text _priceText;
-  [SerializeField] private float _price;
   [SerializeField] private GameObject _object;
   [SerializeField] private GameObject _cash;
   [SerializeField] private GameObject _cashBox;
-  [SerializeField] private Transform _objecPoint;
+  [SerializeField] private Transform _objectPoint;
   [SerializeField] private Transform _topPoint;
+  [SerializeField] private TMP_Text _priceText;
   [SerializeField] private Image _slider;
+  [SerializeField] private float _price;
 
+  private readonly Vector3 _cashRotation = new Vector3(-90, 0, 90);
   private List<GameObject> _money = new List<GameObject>();
-  private Vector3 _cashRotation = new Vector3(-90, 0, 90);
   private GameObject _currentCash;
   private Coroutine _cashAnimation;
   private BoxCollider _collider;
   private Sequence _cashSequence;
   private float _duration = 2f;
+  private int _jumpPower = 10;
+  float _jumpDuration = 0.5f;
 
   private void Start()
   {
@@ -34,11 +36,10 @@ public class PricePanel : MonoBehaviour
 
   private void OnTriggerEnter(Collider collider)
   {
-    if (collider.TryGetComponent(out Player player))
-    {
-      FillingSlider();
-      _cashAnimation = StartCoroutine(CashCreator(player.transform));
-    }
+    if (!collider.TryGetComponent(out Player player)) return;
+
+    FillingSlider();
+    _cashAnimation = StartCoroutine(CashCreator(player.transform));
   }
 
   private void SetStartPrice()
@@ -51,7 +52,7 @@ public class PricePanel : MonoBehaviour
     if (_object == null)
       return;
 
-    Instantiate(_object, _objecPoint.position, Quaternion.identity);
+    Instantiate(_object, _objectPoint.position, Quaternion.identity);
 
     DeactivateThis();
   }
@@ -90,15 +91,13 @@ public class PricePanel : MonoBehaviour
 
   private void CashAnimation(GameObject cash)
   {
-    var jumpDuration = 0.5f;
-
-    cash.transform.DOJump(transform.position, 10, 1, jumpDuration);
+    cash.transform.DOJump(transform.position, _jumpPower, 1, _jumpDuration);
   }
 
   private IEnumerator PriceChange()
   {
-    float elepsedTime = 0f;
-    float initialValue = _price;
+    var elepsedTime = 0f;
+    var initialValue = _price;
 
     UpScale();
 

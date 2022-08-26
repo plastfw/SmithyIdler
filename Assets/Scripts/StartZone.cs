@@ -15,10 +15,10 @@ public class StartZone : MonoBehaviour
   [SerializeField] private List<GameObject> _startZones;
   [SerializeField] private GameObject _arrow;
 
-  private Vector3 _doorRotation = new Vector3(0, 105, 0);
-  private float _doorsOpeningDuration = 1f;
+  private readonly Vector3 _doorRotation = new Vector3(0, 105, 0);
   private TutorialCamera _tutorialCamera;
-  private float _topViewCameraDelay = 2.5f;
+  private float _doorsOpeningDuration = 1f;
+  private float _topViewCameraDelay = 2f;
 
   private void OnEnable()
   {
@@ -38,7 +38,7 @@ public class StartZone : MonoBehaviour
 
   private void ChangeCarColor()
   {
-    foreach (MeshRenderer mesh in _startCarColor)
+    foreach (var mesh in _startCarColor)
     {
       mesh.material = _targetCarColor;
     }
@@ -60,20 +60,21 @@ public class StartZone : MonoBehaviour
 
   private IEnumerator DeactivateAnimation()
   {
-    var ViewCameraDelay = new WaitForSeconds(_topViewCameraDelay);
+    var viewCameraDelay = new WaitForSeconds(_topViewCameraDelay);
+
+    _arrow.SetActive(true);
 
     _tutorialCamera.ActiveTopView();
 
-    yield return ViewCameraDelay;
+    yield return viewCameraDelay;
     _smokeExplosion.Play();
     OpenCarDoors();
     ChangeCarColor();
     DeactivateStartZone();
-    _arrow.SetActive(true);
 
     _tutorialCamera.ActiveCarView();
 
-    yield return ViewCameraDelay;
+    yield return viewCameraDelay;
 
     _tutorialCamera.ActiveDefaultView();
   }

@@ -7,11 +7,11 @@ public class Container : MonoBehaviour
   [SerializeField] private Transform _upperLavaPosition;
   [SerializeField] private bool _isFull;
 
-  private float _fillDuration = 2f;
-  private float _rotationDuration = 0.5f;
-  private float _moveDuration = 0.2f;
+  private readonly Vector3 _targetRotation = Vector3.zero;
+  private readonly float _fillDuration = 0.2f;
+  private readonly float _rotationDuration = 0.5f;
+  private readonly float _moveDuration = 0.2f;
   private Sequence _moveAnimation;
-  private Vector3 _targetRotation = Vector3.zero;
 
   private void Start()
   {

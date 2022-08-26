@@ -17,16 +17,16 @@ public class FoundryConveyor : MonoBehaviour
   [SerializeField] private GameObject _lavaMesh;
   [SerializeField] private Material _lavaMeshMaterial;
 
-  private float _materialMoveDuration = 2f;
-  private int _playerСapacity = 5;
-  private Vector2 _lavaOffset = new Vector2(0, 5);
+  private Vector2 _lavaOffset = new Vector2(0, 1);
   private Vector2 _lentSpeed = new Vector2(0, 5);
-  private Quaternion _containerRotation = Quaternion.Euler(0, 90, 0);
   private Vector3 _bucketRotationOffset = new Vector3(0, 0, 50);
   private Vector3 _standartBucketRotation = Vector3.zero;
+  private Quaternion _containerRotation = Quaternion.Euler(0, 90, 0);
   private Container _currentContainer;
+  private int _playerСapacity = 5;
   private int _startContainersCount = 8;
-  private float _bucketRotationDuration = 1f;
+  private float _materialMoveDuration = 3f;
+  private float _bucketRotationDuration = 0.4f;
   private float _bucketCreatorOffset = 4f;
   private float _containerCreatorDuration = 0.2f;
   private float _moveDuration = 1f;
@@ -93,7 +93,9 @@ public class FoundryConveyor : MonoBehaviour
   private void ActivateLava(bool state)
   {
     _lavaMesh.SetActive(state);
-    _lavaMeshMaterial.DOOffset(_lavaMeshMaterial.mainTextureOffset + _lavaOffset, _materialMoveDuration);
+    _lavaMeshMaterial
+      .DOOffset(_lavaMeshMaterial.mainTextureOffset + _lavaOffset, _materialMoveDuration)
+      .SetEase(Ease.Linear);
   }
 
   private IEnumerator GiveContainer(Player player)
@@ -114,13 +116,14 @@ public class FoundryConveyor : MonoBehaviour
   {
     while (_containers.Count != _containersPoints.Count)
     {
-      var bigDelay = new WaitForSeconds(5f);
+      var bigDelay = new WaitForSeconds(1.5f);
       var delay = new WaitForSeconds(1f);
 
       CreateContainer();
       yield return _containerCreatorDuration;
 
       _move = StartCoroutine(Move(_firstContainerPoint));
+      yield return delay;
 
       _fill = StartCoroutine(FillContainer());
       yield return bigDelay;
@@ -135,24 +138,25 @@ public class FoundryConveyor : MonoBehaviour
 
   private IEnumerator FillContainer()
   {
-    var delay = new WaitForSeconds(1f);
-    var bigDelay = new WaitForSeconds(2f);
+    var delay = new WaitForSeconds(0.5f);
 
-    _rotate = _bucket.transform.DORotate(_bucketRotationOffset, _bucketRotationDuration);
+    _rotate = _bucket.transform
+      .DORotate(_bucketRotationOffset, _bucketRotationDuration)
+      .SetEase(Ease.Linear);
+
     yield return _rotate.WaitForCompletion();
 
     ActivateLava(true);
-
-    _bucket.LavaFallChangeState();
-    yield return delay;
     _currentContainer.Fill();
 
-    yield return bigDelay;
+    yield return delay;
 
     ActivateLava(false);
-    _rotate = _bucket.transform.DORotate(_standartBucketRotation, _bucketRotationDuration);
+    _rotate = _bucket.transform
+      .DORotate(_standartBucketRotation, _bucketRotationDuration)
+      .SetEase(Ease.Linear);
+
     yield return _rotate.WaitForCompletion();
-    _bucket.LavaFallChangeState();
   }
 
   private IEnumerator Move(Transform containerPosition)

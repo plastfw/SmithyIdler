@@ -15,9 +15,9 @@ public class Player : MonoBehaviour
   [SerializeField] private List<Container> _containersInHands;
   [SerializeField] private List<GameObject> _swords;
 
-  private Vector3 _ContainerOffset = new Vector3(0, 0, 0);
+  private readonly Vector3 _swordRotation = new Vector3(90, 90, 0);
+  private Vector3 _containerOffset = new Vector3(0, 0, 0);
   private Vector3 _swordOffset = new Vector3(0, 0, 0);
-  private Vector3 _swordRotation = new Vector3(90, 90, 0);
   private Coroutine _give;
   private float _swordJump = 0.3f;
   private bool _firstSelectionSword = true;
@@ -54,8 +54,8 @@ public class Player : MonoBehaviour
 
     _containersInHands.Add(container);
 
-    container.SetPosition(_ContainerOffset);
-    _ContainerOffset.y += ContainerYOffset;
+    container.SetPosition(_containerOffset);
+    _containerOffset.y += ContainerYOffset;
   }
 
   public void TakeSword(GameObject sword)
@@ -72,7 +72,7 @@ public class Player : MonoBehaviour
       _firstSelectionSword = false;
     }
   }
-  
+
   private void GiveSwords(FinalSwordStorage storage)
   {
     for (int i = 0; i < _swords.Count; i++)
@@ -99,6 +99,6 @@ public class Player : MonoBehaviour
 
     _containersInHands.Clear();
     IsCarry?.Invoke(false);
-    _ContainerOffset.y = 0;
+    _containerOffset.y = 0;
   }
 }

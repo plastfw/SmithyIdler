@@ -6,34 +6,30 @@ using DG.Tweening;
 
 public class SmithyConveyor : MonoBehaviour
 {
-  private const float YOffset = 0.15f;
-
   [SerializeField] private List<Container> _containersOnStand;
   [SerializeField] private List<Transform> _pointsForContainers;
   [SerializeField] private List<GameObject> _swords;
   [SerializeField] private List<Transform> _swordsPoints;
   [SerializeField] private ParticleSystem _waterSteam;
-  [SerializeField] private GameObject _arrow;
   [SerializeField] private Renderer _lent;
-  [SerializeField] private Transform _containersPool;
   [SerializeField] private Transform _firstPosition;
   [SerializeField] private Transform _secondPosition;
   [SerializeField] private Transform _thirdPosition;
   [SerializeField] private Transform _fourthContainerPosition;
   [SerializeField] private Transform _swordPoint;
-  [SerializeField] private Transform _finalSwordPoint;
+  [SerializeField] private GameObject _arrow;
   [SerializeField] private GameObject _workPiece;
-  [SerializeField] private GameObject Sword;
+  [SerializeField] private GameObject _sword;
   [SerializeField] private SwordStorage _swordStorage;
 
-  private GameObject _currentSword;
-  private Container _currentContainer;
-  private GameObject _currentWorkPiece;
-  private readonly Vector2 _lentSpeed = new Vector2(0, 5);
   private readonly Vector3 _position = Vector3.zero;
-  private float _moveDuration = 1f;
-  private float _standartJumpDuration = 0.2f;
-  private float _hittingDuration = 1.6f;
+  private readonly Vector2 _lentSpeed = new Vector2(0, 5);
+  private GameObject _currentSword;
+  private GameObject _currentWorkPiece;
+  private Container _currentContainer;
+  private float _moveDuration = 0.5f;
+  private float _standartJumpDuration = 0.5f;
+  private float _hittingDuration = 2.5f;
   private int _standartJumpPower = 1;
   private int _swordJumpPower = 5;
   private int _containerIndex = 0;
@@ -79,17 +75,13 @@ public class SmithyConveyor : MonoBehaviour
     var moveDelay = new WaitForSeconds(_moveDuration);
     var hittingDuration = new WaitForSeconds(_hittingDuration);
 
-    yield return delay;
-
     while (_containersOnStand.Count > 0)
     {
       _currentContainer = _containersOnStand[_containersOnStand.Count - 1];
 
-      yield return delay;
-
       _jump = StartCoroutine(Jump(_firstPosition, _currentContainer.gameObject, _standartJumpPower));
       yield return jumpDelay;
-      
+
       ContainerOnConveyor?.Invoke();
 
       _containerIndex--;
@@ -118,7 +110,6 @@ public class SmithyConveyor : MonoBehaviour
 
       _jump = StartCoroutine(Jump(_swordsPoints[_swordIndex], _currentSword, _swordJumpPower));
       _swordIndex++;
-      yield return jumpDelay;
     }
   }
 
@@ -129,7 +120,7 @@ public class SmithyConveyor : MonoBehaviour
 
   private void CreateSword()
   {
-    _currentSword = Instantiate(Sword, _swordPoint.position, _swordPoint.rotation);
+    _currentSword = Instantiate(_sword, _swordPoint.position, _swordPoint.rotation);
 
     _swords.Add(_currentSword);
   }
